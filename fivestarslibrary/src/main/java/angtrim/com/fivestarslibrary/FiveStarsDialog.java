@@ -42,6 +42,7 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private NegativeReviewListener negativeReviewListener;
     private ReviewListener reviewListener;
     private int starColor;
+    private boolean isTesting = false;
 
     public FiveStarsDialog(Context context, String supportEmail) {
         this.context = context;
@@ -85,6 +86,9 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     }
 
     private void disable() {
+        if (isTesting) {
+            return;
+        }
         SharedPreferences shared = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = shared.edit();
         editor.putBoolean(SP_DISABLED, true);
@@ -223,4 +227,15 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
         return this;
     }
 
+    /**
+     * Set to true if you do not want to disable dialogs when clicking OK or Never
+     * Default false
+     *
+     * @param isTesting
+     * @return
+     */
+    public FiveStarsDialog setTesting(boolean isTesting) {
+        this.isTesting = isTesting;
+        return this;
+    }
 }
