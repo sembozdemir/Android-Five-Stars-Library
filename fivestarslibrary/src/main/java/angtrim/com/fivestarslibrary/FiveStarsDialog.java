@@ -36,6 +36,9 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private RatingBar ratingBar;
     private String title = null;
     private String rateText = null;
+    private String positiveLabel = DEFAULT_POSITIVE;
+    private String notNowLabel = DEFAULT_NEGATIVE;
+    private String neverLabel = DEFAULT_NEVER;
     private AlertDialog alertDialog;
     private View dialogView;
     private int upperBound = 4;
@@ -79,9 +82,9 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
 
         alertDialog = builder.setTitle(titleToAdd)
                 .setView(dialogView)
-                .setNegativeButton(DEFAULT_NEGATIVE, this)
-                .setPositiveButton(DEFAULT_POSITIVE, this)
-                .setNeutralButton(DEFAULT_NEVER, this)
+                .setNegativeButton(notNowLabel, this)
+                .setPositiveButton(positiveLabel, this)
+                .setNeutralButton(neverLabel, this)
                 .create();
     }
 
@@ -236,6 +239,21 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
      */
     public FiveStarsDialog setTesting(boolean isTesting) {
         this.isTesting = isTesting;
+        return this;
+    }
+
+    /**
+     * Set custom labels to support localization
+     *
+     * @param positive positive label
+     * @param notNow not now label
+     * @param never never label
+     * @return
+     */
+    public FiveStarsDialog setLabels(String positive, String notNow, String never) {
+        positiveLabel = positive;
+        notNowLabel = notNow;
+        neverLabel = never;
         return this;
     }
 }
