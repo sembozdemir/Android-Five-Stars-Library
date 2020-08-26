@@ -1,5 +1,6 @@
 package angtrim.com.fivestarslibrary;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,7 +14,15 @@ import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.tasks.OnCompleteListener;
+import com.google.android.play.core.tasks.OnFailureListener;
+import com.google.android.play.core.tasks.Task;
 
 
 /**
@@ -45,8 +54,10 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private int upperBound = 4;
     private NegativeReviewListener negativeReviewListener;
     private ReviewListener reviewListener;
+    private InAppReviewListener inAppReviewListener;
     private int starColor;
     private boolean isTesting = false;
+    private boolean inAppReviewMode = false;
 
     public FiveStarsDialog(Context context, String supportEmail) {
         this.context = context;
@@ -68,7 +79,11 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
             public void onRatingChanged(RatingBar ratingBar, float v, boolean b) {
                 Log.d(TAG, "Rating changed : " + v);
                 if (isForceMode && v >= upperBound) {
-                    openMarket();
+                    if (inAppReviewMode) {
+                        launchInAppReview();
+                    } else {
+                        openMarket();
+                    }
                     if (reviewListener != null)
                         reviewListener.onReview((int) ratingBar.getRating());
                 }
@@ -87,6 +102,39 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
                 .setPositiveButton(positiveLabel, this)
                 .setNeutralButton(neverLabel, this)
                 .create();
+    }
+
+    private void launchInAppReview() {
+        final ReviewManager manager = ReviewManagerFactory.create(context);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(new OnCompleteListener<ReviewInfo>() {
+            @Override
+            public void onComplete(@NonNull Task<ReviewInfo> task) {
+                if (task.isSuccessful()) {
+                    if (context instanceof Activity) {
+                        Task<Void> flow = manager.launchReviewFlow(((Activity) context), task.getResult());
+                        flow.addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (inAppReviewListener != null) {
+                                    inAppReviewListener.onInAppReview();
+                                }
+                            }
+                        });
+                        flow.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(Exception e) {
+                                openMarket();
+                            }
+                        });
+                    } else {
+                        openMarket();
+                    }
+                } else {
+                    openMarket();
+                }
+            }
+        });
     }
 
     private void disable() {
@@ -148,7 +196,11 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
                 }
 
             } else if (!isForceMode) {
-                openMarket();
+                if (inAppReviewMode) {
+                    launchInAppReview();
+                } else {
+                    openMarket();
+                }
             }
             disable();
             if (reviewListener != null)
@@ -255,6 +307,30 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
         positiveLabel = positive;
         notNowLabel = notNow;
         neverLabel = never;
+        return this;
+    }
+
+    /**
+     * Enable in-app review popup
+     *
+     * @param inAppReviewMode
+     * @return
+     */
+    public FiveStarsDialog setInAppReviewMode(boolean inAppReviewMode) {
+        this.inAppReviewMode = inAppReviewMode;
+        return this;
+    }
+
+    /**
+     * Set a listener to get notified when in app review flow completed, for example for tracking purposes
+     *
+     * Note that, The API does not indicate whether the user reviewed or not, or even whether the review dialog was shown
+     *
+     * @param inAppReviewListener
+     * @return
+     */
+    public FiveStarsDialog setInAppReviewListener(InAppReviewListener inAppReviewListener) {
+        this.inAppReviewListener = inAppReviewListener;
         return this;
     }
 }
