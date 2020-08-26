@@ -21,6 +21,7 @@ import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
 import com.google.android.play.core.tasks.OnCompleteListener;
+import com.google.android.play.core.tasks.OnFailureListener;
 import com.google.android.play.core.tasks.Task;
 
 
@@ -120,7 +121,17 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
                                 }
                             }
                         });
+                        flow.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(Exception e) {
+                                openMarket();
+                            }
+                        });
+                    } else {
+                        openMarket();
                     }
+                } else {
+                    openMarket();
                 }
             }
         });
