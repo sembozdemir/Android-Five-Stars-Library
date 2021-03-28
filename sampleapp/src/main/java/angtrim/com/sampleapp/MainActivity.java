@@ -10,10 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import angtrim.com.fivestarslibrary.FiveStarsDialog;
 import angtrim.com.fivestarslibrary.InAppReviewListener;
 import angtrim.com.fivestarslibrary.NegativeReviewListener;
+import angtrim.com.fivestarslibrary.PositiveReviewListener;
 import angtrim.com.fivestarslibrary.ReviewListener;
 
 
-public class MainActivity extends AppCompatActivity implements NegativeReviewListener, ReviewListener, InAppReviewListener {
+public class MainActivity extends AppCompatActivity implements NegativeReviewListener, ReviewListener, InAppReviewListener, PositiveReviewListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -26,7 +27,9 @@ public class MainActivity extends AppCompatActivity implements NegativeReviewLis
                 .setTitle("Your custom title")
                 .setForceMode(false)
                 .setUpperBound(2)
+                .setLabels("Ok", "Not Now", "")
                 .setNegativeReviewListener(this)
+                .setPositiveReviewListener(this)
                 .setReviewListener(this)
                 .setInAppReviewMode(true)
                 .setInAppReviewListener(this)
@@ -69,5 +72,10 @@ public class MainActivity extends AppCompatActivity implements NegativeReviewLis
     @Override
     public void onInAppReview() {
         Log.d(TAG, "InAppReview");
+    }
+
+    @Override
+    public void onPositiveReview(int stars) {
+        Log.d(TAG, "Positive review " + stars);
     }
 }
