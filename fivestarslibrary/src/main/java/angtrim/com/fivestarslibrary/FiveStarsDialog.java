@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,13 +47,14 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private RatingBar ratingBar;
     private String title = null;
     private String rateText = null;
-    private String positiveLabel = DEFAULT_POSITIVE;
-    private String notNowLabel = DEFAULT_NEGATIVE;
-    private String neverLabel = DEFAULT_NEVER;
+    private String positiveLabel = "";
+    private String notNowLabel = "";
+    private String neverLabel = "";
     private AlertDialog alertDialog;
     private View dialogView;
     private int upperBound = 4;
     private NegativeReviewListener negativeReviewListener;
+    private PositiveReviewListener positiveReviewListener;
     private ReviewListener reviewListener;
     private InAppReviewListener inAppReviewListener;
     private int starColor;
@@ -96,12 +98,18 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
             stars.getDrawable(2).setColorFilter(starColor, PorterDuff.Mode.SRC_ATOP);
         }
 
-        alertDialog = builder.setTitle(titleToAdd)
+        builder.setTitle(titleToAdd)
                 .setView(dialogView)
-                .setNegativeButton(notNowLabel, this)
-                .setPositiveButton(positiveLabel, this)
-                .setNeutralButton(neverLabel, this)
-                .create();
+                .setPositiveButton(positiveLabel, this);
+
+        if (!TextUtils.isEmpty(notNowLabel)) {
+            builder.setNegativeButton(notNowLabel, this);
+        }
+
+        if (!TextUtils.isEmpty(neverLabel)) {
+            builder.setNeutralButton(neverLabel, this);
+        }
+        alertDialog = builder.create();
     }
 
     private void launchInAppReview() {
@@ -196,7 +204,9 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
                 }
 
             } else if (!isForceMode) {
-                if (inAppReviewMode) {
+                if (positiveReviewListener != null) {
+                    positiveReviewListener.onPositiveReview((int) ratingBar.getRating());
+                } else if (inAppReviewMode) {
                     launchInAppReview();
                 } else {
                     openMarket();
@@ -269,6 +279,17 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
      */
     public FiveStarsDialog setNegativeReviewListener(NegativeReviewListener listener) {
         this.negativeReviewListener = listener;
+        return this;
+    }
+
+    /**
+     * Set a custom listener if you want to OVERRIDE the default "open market" action when the user gives a positive review
+     *
+     * @param listener
+     * @return
+     */
+    public FiveStarsDialog setPositiveReviewListener(PositiveReviewListener listener) {
+        this.positiveReviewListener = listener;
         return this;
     }
 
