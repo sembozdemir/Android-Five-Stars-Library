@@ -1,5 +1,6 @@
 package angtrim.com.sampleapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements NegativeReviewLis
                 .setLabels("Ok", "Not Now", "")
                 .setNegativeReviewListener(this)
                 .setPositiveReviewListener(this)
+                .setStarColor(Color.YELLOW)
                 .setThemeResId(R.style.AppFiveStarsDialog)
                 .setTesting(true)
                 .setReviewListener(this)

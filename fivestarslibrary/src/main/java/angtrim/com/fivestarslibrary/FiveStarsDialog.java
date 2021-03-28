@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
@@ -103,6 +104,7 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
 
         if (starColor != -1) {
             LayerDrawable stars = (LayerDrawable) ratingBar.getProgressDrawable();
+            stars.getDrawable(0).setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
             stars.getDrawable(1).setColorFilter(starColor, PorterDuff.Mode.SRC_ATOP);
             stars.getDrawable(2).setColorFilter(starColor, PorterDuff.Mode.SRC_ATOP);
         }
