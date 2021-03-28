@@ -10,6 +10,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RatingBar;
@@ -62,7 +63,7 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private boolean isTesting = false;
     private boolean inAppReviewMode = false;
     @StyleRes
-    private int themeResId;
+    private int themeResId = 0;
 
     public FiveStarsDialog(Context context, String supportEmail) {
         this.context = context;
@@ -73,7 +74,7 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private void build() {
         AlertDialog.Builder builder;
         if (themeResId != 0) {
-            builder = new AlertDialog.Builder(context, themeResId);
+            builder = new AlertDialog.Builder(new ContextThemeWrapper(context, themeResId));
         } else {
             builder = new AlertDialog.Builder(context);
         }
