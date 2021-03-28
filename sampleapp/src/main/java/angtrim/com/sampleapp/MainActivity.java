@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements NegativeReviewLis
                 .setLabels("Ok", "Not Now", "")
                 .setNegativeReviewListener(this)
                 .setPositiveReviewListener(this)
+                .setThemeResId(R.style.AppFiveStarsDialog)
+                .setTesting(true)
                 .setReviewListener(this)
                 .setInAppReviewMode(true)
                 .setInAppReviewListener(this)

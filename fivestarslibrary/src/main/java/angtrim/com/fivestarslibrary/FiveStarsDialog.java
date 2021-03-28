@@ -16,6 +16,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.play.core.review.ReviewInfo;
@@ -60,6 +61,8 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     private int starColor;
     private boolean isTesting = false;
     private boolean inAppReviewMode = false;
+    @StyleRes
+    private int themeResId;
 
     public FiveStarsDialog(Context context, String supportEmail) {
         this.context = context;
@@ -68,7 +71,12 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
     }
 
     private void build() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        AlertDialog.Builder builder;
+        if (themeResId != 0) {
+            builder = new AlertDialog.Builder(context, themeResId);
+        } else {
+            builder = new AlertDialog.Builder(context);
+        }
         LayoutInflater inflater = LayoutInflater.from(context);
         dialogView = inflater.inflate(R.layout.stars, null);
         String titleToAdd = (title == null) ? DEFAULT_TITLE : title;
@@ -313,6 +321,17 @@ public class FiveStarsDialog implements DialogInterface.OnClickListener {
      */
     public FiveStarsDialog setTesting(boolean isTesting) {
         this.isTesting = isTesting;
+        return this;
+    }
+
+    /**
+     * Set theme resource id to specift a theme
+     *
+     * @param themeResId
+     * @return
+     */
+    public FiveStarsDialog setThemeResId(@StyleRes int themeResId) {
+        this.themeResId = themeResId;
         return this;
     }
 
